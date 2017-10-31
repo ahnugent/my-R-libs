@@ -1,7 +1,7 @@
-# Script:       io.R
+# Script:       iofns.R
 # Authors:      Allen H Nugent, 2015+
-# Last edit:    2016-03-10
-# Last test:    2016-03-10
+# Last edit:    2016-12-21
+# Last test:    2016-12-21
 #
 # Purpose:      Library of I/O functions not covered by R base (or not obviously covered by standard libraries).
 #
@@ -16,23 +16,64 @@
 #
 # Contents:
 #
+#   datafile            Sets file descriptor parameters from atomic arguments.
+#
 #   get.longest.line    Gets longest line in a (text) file of any size.
 #
 #   get.maxlinelength   Gets length of longest line in a (text) file of any size.
 #
 #   get.num.lines       Gets number of lines in a (text) file of any size.
 #
+#   loadPackages        Tests for existence of packages in input vector, installs if necessary, then loads into memory.
+#
 #   read.header         Reads header lines of a data file into a string list.
 #
-#
 
 
-library(readr)
+# if (!require("readr")) install.packages("readr")
+# library(readr)
+
+loadPackages <- function(pkgs, libSource = NULL) 
+{
+    # Tests for existence of packages in input vector, installs if necessary, then loads into memory.
+    #
+    # libSource is used for non-CRAN library sources. NOT YET CODED !
+    
+    for (i in 1:NROW(pkgs)) {
+        print(paste("loadPackages(): Checking for", pkgs[i]))
+        if (!require(pkgs[i])) install.packages(pkgs[i])
+        #require(pkgs[i])
+        library(pkgs[i], character.only = TRUE)
+    }
+}
+
+# NFG: loadPackages(c("readr"))
+if (!require("readr")) install.packages("readr")
 
 
+datafile <- function(file.prefix, file.num, file.ext, folder.in) 
+{
+    # Sets file descriptor parameters.
+    
+    if (file.num < 10 ) {
+        file.suffix <- paste0("00", as.character(file.num))    
+    } else if (file.num < 100) {
+        file.suffix <- paste0("0", as.character(file.num))
+    } else {
+        file.suffix <- as.character(file.num) 
+    }
+    file.name <- paste0(file.prefix, file.suffix, ".", file.ext)
+    file.path <- paste0(folder.in, "/", file.name)
+    
+    out <- data.frame(prefix = file.prefix, suffix = file.suffix, 
+                      ext = file.ext, name = file.name, path = file.path,
+                      stringsAsFactors = FALSE)
+    return(out)
+}
 
-get.num.lines <- function(filepath, safe.read = TRUE, buffersize = 20000) {
 
+get.num.lines <- function(filepath, safe.read = TRUE, buffersize = 20000) 
+{
     # Gets number of lines in a (text) file of any size.
     # Mar'16
     
