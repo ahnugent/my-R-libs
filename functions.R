@@ -1,4 +1,10 @@
-## 05/07/16
+# File:         functions.R
+# Authors:      Allen H Nugent, Apr'16
+# Authors:      Allen H. Nugent, 2015+
+# Last edit:    2017-10-31
+# Last test:    ?
+# Purpose:      Math and stats functions.
+#
 
 
 # Poisson distribution ...

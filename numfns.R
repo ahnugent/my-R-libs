@@ -4,9 +4,11 @@
 # Last edit:    2016-10-21
 # Last test:    2016-12-21
 #
-# Purpose:      Library of general functions, utilities, and data structures for numerical analysis.
+# Purpose:      Library of general functions, utilities, and data structures for basic analytics and numerical analysis.
 #
 # Contents:
+#
+#	cscale 				Applies scaling to specified columns.
 #
 #   get.ndim            Gets number of columns in vector or data frame (compensates for R's ludicrous omission).
 #
@@ -20,6 +22,28 @@
 #
 #   numsig              Returns the number of significant figures in a number.
 #
+#	percentdiff			Returns percentage difference between the arguments.
+#
+#--------------------------------------------------------------------------------------------
+
+
+percentdiff <- function(x1, x2, absolute = FALSE, percent = TRUE, ndec = 2) {
+    
+    #Returns percentage difference between the arguments.
+    
+    result <- x2 - x1
+    if (absolute) {
+        result <- abs(result)
+    }
+    
+    result <- result / abs(x1)
+    
+    if (percent) {
+        result <- result * 100
+    }
+    
+    return(cround(result, 2))
+}
 
 
 get.nrow <- function(data) {
@@ -90,6 +114,24 @@ is.wholenumber <- function(x, tol = .Machine$double.eps ^ 0.5)
     # Returns TRUE if argument is integral (i.e. a whole number).
     
     return(abs(x - round(x)) < tol)
+}
+
+
+cscale <- function (d, col.names, scales) {
+    
+    # Applies scaling to specified columns.
+    
+    ncols <- length(col.names)
+    if (length(scales) < ncols) {
+        scales <- rep(scales, ncols)
+    }
+    
+    for (i in 1:ncols) {
+        icol <- which(names(d) == col.names[i])
+        d[, icol] <- d[, icol] * scales[i]
+    }
+    
+    return(d)
 }
 
 

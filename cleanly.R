@@ -3,7 +3,7 @@
 # Last edit:    2017-10-31
 # Last test:    2017-10-26
 # Prev edit:    2017-06-29
-# Purpose:      Data cleaning functions. (Nb. SparkR data cleaning functions are defined in another library.)
+# Purpose:      Data cleaning and profiling functions. (Nb. SparkR data cleaning functions are defined in another library.)
 #
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -14,8 +14,6 @@
 #
 #   count.column        Used by column.counts(): Returns count of elements in the input vector containing the value 
 #                       specified.
-#
-#   cround              Applies rounding and formatting with specified number of significant figures.
 #
 #   cscale              Applies rescaling to specified columns.
 #
@@ -30,39 +28,24 @@
 #
 #   get.col.nums        Returns a vector of column number pertaining to the names provided.
 #  
-#   left                Returns the left-most N characters from a string.
-#   
 #   lookup              Returns a vector of lookup values from lookupTable using keyVector as indices.
 #
 #   na.replace          Replaces NA within a vector with specified value. 
 #
-#   percentdiff         Returns percentage difference between the arguments.
-#
-#   plotlist            UNFINISHED: Plots a list of time series in a grid.
-#
-#   right               Returns the right-most N characters from a string.
-#
 #   set.factorsp        Defines a factor based on a set of levels and an arbitrary sequence,
 #                       and applies it to the input vector.
+#
+#   set.levels			Replaces a factor-like variable based on a set of levels and an arbitrary sequence,
+#						and applies it to the input vector.
 #
 #   test.column         Used by dirty.columns(): Returns TRUE if the input vector contains any/all of the value 
 #                       specified.
 #
-#   trim.leading        trims leading whitespace from a string
 #
-#   trim.trailing       trims trailing whitespace from a string
+# See also:
 #
-#   trim                trims leading and trailing whitespace from a string
-#
-#
-# See numfns.R for the following:
-#
-#   is.wholenumber     
-#   is.all.integer
-#   numdec
-#   numsig
-#   get.ndim
-#   get.nrow
+#	strfns.R 
+# 	numfns.R 
 #
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -354,53 +337,6 @@ filldates <- function(all_dates, d, col.date = 1, col.data = 2)
     d <- merge(all_dates, d, by = col.date, all.x = TRUE)
     d[, col.data] <- na.replace(d[, col.data], 0)
     return(d)
-}
-
-
-cround <- function(x, n)
-{
-    # Applies rounding and formatting with specified number of significant figures.
-    # AHN 16/12/15
-    
-    answer <- sprintf(paste0("%.", n, "f"), round(x, n))
-    return(answer)
-}
-
-
-cscale <- function (d, col.names, scales) {
-    
-    # Applies scaling to specified columns.
-    
-    ncols <- length(col.names)
-    if (length(scales) < ncols) {
-        scales <- rep(scales, ncols)
-    }
-    
-    for (i in 1:ncols) {
-        icol <- which(names(d) == col.names[i])
-        d[, icol] <- d[, icol] * scales[i]
-    }
-    
-    return(d)
-}
-
-
-percentdiff <- function(x1, x2, absolute = FALSE, percent = TRUE, ndec = 2) {
-    
-    #Returns percentage difference between the arguments.
-    
-    result <- x2 - x1
-    if (absolute) {
-        result <- abs(result)
-    }
-    
-    result <- result / abs(x1)
-    
-    if (percent) {
-        result <- result * 100
-    }
-    
-    return(cround(result, 2))
 }
 
 
